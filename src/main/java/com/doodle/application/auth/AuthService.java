@@ -2,6 +2,7 @@ package com.doodle.application.auth;
 
 import com.doodle.application.role.Role;
 import com.doodle.application.user.AdminUserDTO;
+import com.doodle.application.user.CustomerUserDTO;
 import com.doodle.application.user.User;
 import com.doodle.application.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public User registerAdmin(AdminUserDTO adminUserDTO) {
-        User userAdmin = User.builder()
+        User adminUser = User.builder()
                 .firstName(adminUserDTO.getFirstName())
                 .lastName(adminUserDTO.getLastName())
                 .role(Role.ADMIN)
@@ -25,6 +26,19 @@ public class AuthService {
                 .password(passwordEncoder.encode(adminUserDTO.getPassword()))
                 .build();
 
-        return userService.saveUser(userAdmin);
+        return userService.saveUser(adminUser);
+    }
+
+    public User registerCustomer(CustomerUserDTO customerUserDTO) {
+        User customerUser = User.builder()
+                .firstName(customerUserDTO.getFirstName())
+                .lastName(customerUserDTO.getLastName())
+                .address(customerUserDTO.getAddress())
+                .role(Role.CUSTOMER)
+                .username(customerUserDTO.getUsername())
+                .password(passwordEncoder.encode(customerUserDTO.getPassword()))
+                .build();
+
+        return userService.saveUser(customerUser);
     }
 }
