@@ -15,3 +15,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
+jwt:
+  secret-key: ${SECRET_KEY}
+  auth-header: Authorization
+  token-prefix: Bearer
