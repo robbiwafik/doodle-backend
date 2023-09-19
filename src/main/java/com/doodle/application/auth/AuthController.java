@@ -104,6 +104,41 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/jwt/customer/create")
+    public ResponseEntity createCustomerToken(
+            @Valid @RequestBody AuthenticationDTO authenticationDTO,
+            BindingResult validationResult
+    ) {
+        if (validationResult.hasErrors())
+            return handleInvalidInputFields(validationResult);
+
+        try {
+            User user = (User) authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    authenticationDTO.getUsername(),
+                                    authenticationDTO.getPassword()
+                            )
+                    )
+                    .getPrincipal();
+
+            if (!userService.isCustomerUser(user))
+                return new ResponseEntity(
+                        new AuthenticationErrorResponse("Invalid credentials"),
+                        HttpStatus.BAD_REQUEST
+                );
+
+            String jwt = jwtService.generateToken(user);
+
+            return ResponseEntity.ok(new JwtAuthResponse(jwt));
+        }
+        catch (AuthenticationException exc) {
+            return new ResponseEntity(
+                    new AuthenticationErrorResponse(exc.getMessage()),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
     private ResponseEntity handleInvalidInputFields(BindingResult validationResult) {
         Map<String, String> errors = validationUtil.mapInputValidationErrors(validationResult);
 

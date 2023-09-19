@@ -20,6 +20,10 @@ public class UserService implements UserDetailsService {
         return user.getRole().equals(Role.ADMIN);
     }
 
+    public boolean isCustomerUser(User user) {
+        return user.getRole().equals(Role.CUSTOMER);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository
