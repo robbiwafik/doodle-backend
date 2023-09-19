@@ -6,6 +6,8 @@ import com.doodle.application.user.CustomerUserDTO;
 import com.doodle.application.user.User;
 import com.doodle.application.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,5 +45,11 @@ public class AuthService {
                 .build();
 
         return userService.saveUser(customerUser);
+    }
+
+    public User authenticate(String username, String password) {
+        return (User) authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(username, password))
+                .getPrincipal();
     }
 }
