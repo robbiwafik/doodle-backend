@@ -1,6 +1,6 @@
 package com.doodle.application.auth;
 
-import com.doodle.application.jwt.JwtService;
+import com.doodle.application.jwt.JwtUtil;
 import com.doodle.application.role.Role;
 import com.doodle.application.user.AdminUserDTO;
 import com.doodle.application.user.CustomerUserDTO;
@@ -30,7 +30,7 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtUtil jwtUtil;
 
     @Autowired
     private ValidationUtil validationUtil;
@@ -81,7 +81,7 @@ public class AuthController {
                     HttpStatus.UNAUTHORIZED
             );
 
-        String jwt = jwtService.generateToken(user);
+        String jwt = jwtUtil.generateToken(user);
 
         return ResponseEntity.ok(new JwtAuthResponse(jwt));
     }

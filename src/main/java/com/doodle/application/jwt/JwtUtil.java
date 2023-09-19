@@ -4,22 +4,21 @@ import com.doodle.application.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-public class JwtService {
+@Component
+public class JwtUtil {
     private final int MILLISECONDS_IN_SECOND = 1000;
     private final int SECONDS_IN_MINUTE = 60;
     private final int MINUTES_IN_HOURS = 60;
     private final int HOURS_IN_WEEK = 128;
-
     private final String SECRET_KEY;
 
-    public JwtService(@Value("${jwt.secret-key}") String secretKey) {
+    public JwtUtil(@Value("${jwt.secret-key}") String secretKey) {
         SECRET_KEY = secretKey;
     }
 
