@@ -1,6 +1,7 @@
 package com.doodle.application.jwt;
 
 import com.doodle.application.user.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -35,5 +37,35 @@ public class JwtUtil {
                 ))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
+    }
+
+    public String extractUsername(String jwt) {
+        return extractClaim(jwt, Claims::getSubject);
+    }
+
+    public Date extractExpirationDate(String jwt) {
+        return extractClaim(jwt, Claims::getExpiration);
+    }
+
+    public boolean isValidToken(String jwt, User user) {
+        String usernameFromJwt = extractUsername(jwt);
+        String usernameFromUser = user.getUsername();
+        Date currentDate = new Date();
+        Date expirationDate = extractExpirationDate(jwt);
+
+        return usernameFromJwt.equals(usernameFromUser) && currentDate.before(expirationDate);
+    }
+
+    private <T> T extractClaim(String jwt, Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(jwt);
+
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String jwt) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(jwt)
+                .getBody();
     }
 }
