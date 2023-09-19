@@ -1,5 +1,6 @@
 package com.doodle.application.user;
 
+import com.doodle.application.role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +14,10 @@ public class UserService implements UserDetailsService {
 
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    public boolean isAdminUser(User user) {
+        return user.getRole().equals(Role.ADMIN);
     }
 
     @Override

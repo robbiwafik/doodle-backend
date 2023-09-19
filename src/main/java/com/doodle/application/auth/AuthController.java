@@ -1,14 +1,19 @@
 package com.doodle.application.auth;
 
+import com.doodle.application.jwt.JwtService;
 import com.doodle.application.user.AdminUserDTO;
 import com.doodle.application.user.CustomerUserDTO;
 import com.doodle.application.user.User;
+import com.doodle.application.user.UserService;
 import com.doodle.application.utils.InvalidInputFieldsResponse;
 import com.doodle.application.utils.ValidationUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +26,16 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
     private AuthService authService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private ValidationUtil validationUtil;
@@ -56,6 +70,38 @@ public class AuthController {
                 new RegisteredCustomerUserResponse(customerUser),
                 HttpStatus.CREATED
         );
+    }
+
+    @PostMapping("/jwt/admin/create")
+    public ResponseEntity createAdminToken(
+            @Valid @RequestBody AuthenticationDTO authenticationDTO,
+            BindingResult validationResult
+    ) {
+        if (validationResult.hasErrors())
+            return handleInvalidInputFields(validationResult);
+
+        try {
+            User user = (User) authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationDTO.getUsername(),
+                            authenticationDTO.getPassword()
+                    )
+            ).getPrincipal();
+            if (!userService.isAdminUser(user))
+                return new ResponseEntity(
+                        new AuthenticationErrorResponse("Invalid credentials."),
+                        HttpStatus.BAD_REQUEST
+                );
+            String jwt = jwtService.generateToken(user);
+
+            return ResponseEntity.ok(new JwtAuthResponse(jwt));
+        }
+        catch (AuthenticationException exc) {
+            return new ResponseEntity(
+                    new AuthenticationErrorResponse(exc.getMessage()),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     private ResponseEntity handleInvalidInputFields(BindingResult validationResult) {
