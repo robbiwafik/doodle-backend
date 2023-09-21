@@ -1,10 +1,12 @@
 package com.doodle.application.security;
 
 import com.doodle.application.jwt.JwtAuthFilter;
+import com.doodle.application.role.Role;
 import com.doodle.application.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -26,6 +28,8 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    private final String ADMIN = Role.ADMIN.name();
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration
@@ -46,7 +50,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize
+                .authorizeHttpRequests(authorizeCustomizer -> authorizeCustomizer
+                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/categories").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/categories/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/categories/**").hasRole(ADMIN)
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
