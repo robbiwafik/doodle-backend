@@ -1,8 +1,6 @@
 package com.doodle.application.exception;
 
 import com.doodle.application.auth.AuthenticationErrorResponse;
-import com.doodle.application.utils.EntityNotFoundResponse;
-import com.doodle.application.utils.InvalidInputFieldsResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +43,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(
                 new EntityNotFoundResponse(exception.getMessage()),
                 HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler({Exception.class, IOException.class})
+    public ResponseEntity handleInternalException() {
+        return new ResponseEntity(
+                new InternalErrorResponse("An error occurred when processing your request."),
+                HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 

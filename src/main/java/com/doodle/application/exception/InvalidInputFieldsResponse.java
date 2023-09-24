@@ -1,4 +1,4 @@
-package com.doodle.application.utils;
+package com.doodle.application.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
