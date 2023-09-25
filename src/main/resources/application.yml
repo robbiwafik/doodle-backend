@@ -19,3 +19,7 @@ jwt:
   secret-key: ${SECRET_KEY}
   auth-header: Authorization
   token-prefix: Bearer
+
+application:
+  file:
+    upload-dir: C:/Users/user/Documents/projects/doodle/backend/application/src/main/uploads/
