@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorizeCustomizer -> authorizeCustomizer
                         .requestMatchers(HttpMethod.GET, "/categories/**", "/products/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/categories", "/products").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/categories", "/products/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/categories/**", "/products/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/categories/**", "/products/**").hasRole(ADMIN)
                         .requestMatchers("/auth/**").permitAll()
