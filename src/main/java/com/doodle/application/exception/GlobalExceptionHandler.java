@@ -24,6 +24,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity handleBadRequest(BadRequestException exception) {
+        return new ResponseEntity(
+                new BadRequestResponse(exception.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleInvalidInputRequest(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
