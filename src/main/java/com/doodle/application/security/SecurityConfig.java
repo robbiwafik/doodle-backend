@@ -31,6 +31,7 @@ public class SecurityConfig {
     private JwtAuthFilter jwtAuthFilter;
 
     private final String ADMIN = Role.ADMIN.name();
+    private final String CUSTOMER = Role.CUSTOMER.name();
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -57,13 +58,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/categories", "/products/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/categories/**", "/products/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/categories/**", "/products/**").hasRole(ADMIN)
+                        .requestMatchers("/cart/**").hasRole(CUSTOMER)
                         .requestMatchers("/auth/**", "/uploads/**").permitAll()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
