@@ -40,4 +40,12 @@ public class CartService {
         return cartRepository.findByCustomer(customer)
                 .orElseThrow(() -> new EntityNotFoundException("The current customer hasn't created a cart."));
     }
+
+    public Cart getCart(String id) {
+        return cartRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Cart with given id " + id + " does not exist." )
+                );
+    }
 }
