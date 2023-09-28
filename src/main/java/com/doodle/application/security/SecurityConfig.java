@@ -58,13 +58,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/categories", "/products/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/categories/**", "/products/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/categories/**", "/products/**").hasRole(ADMIN)
-                        .requestMatchers("/cart/**").hasRole(CUSTOMER)
+                        .requestMatchers("/cart/**", "/orders/me").hasRole(CUSTOMER)
+                        .requestMatchers(HttpMethod.POST, "/orders").hasRole(CUSTOMER)
+                        .requestMatchers(HttpMethod.PATCH, "/orders/**").hasRole(CUSTOMER)
+                        .requestMatchers("/orders/**").hasAnyRole(ADMIN, CUSTOMER)
                         .requestMatchers("/auth/**", "/uploads/**").permitAll()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
