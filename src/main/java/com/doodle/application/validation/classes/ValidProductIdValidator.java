@@ -14,6 +14,8 @@ public class ValidProductIdValidator implements ConstraintValidator<ValidProduct
 
     @Override
     public boolean isValid(Integer id, ConstraintValidatorContext constraintValidatorContext) {
+        if (id == null) return false;
+
         try {
             productService.getProduct(id);
             return true;
